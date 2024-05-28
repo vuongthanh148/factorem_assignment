@@ -6,7 +6,7 @@ const createUser = {
   body: Joi.object().keys({
     username: Joi.string().required(),
     password: Joi.string().required().custom(password),
-    role: Joi.string().required().valid(ROLE_ENUM.USER, ROLE_ENUM.ADMIN),
+    role: Joi.string().required().valid(ROLE_ENUM.CUSTOMER, ROLE_ENUM.ADMIN, ROLE_ENUM.SUPPLIER),
   }),
 };
 

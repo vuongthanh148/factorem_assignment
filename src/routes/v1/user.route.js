@@ -9,8 +9,7 @@ const router = express.Router();
 
 router
   .route('/')
-  .post(auth([PERMISSION_ENUM.CREATE_USER]), validate(userValidation.createUser), userController.createUser)
-  .get(auth([PERMISSION_ENUM.GET_USER]), validate(userValidation.getUsers), userController.getUsers);
+  .get(auth([PERMISSION_ENUM.MANAGE_USER]), validate(userValidation.getUsers), userController.getUsers);
 
 export default router;
 
@@ -24,51 +23,6 @@ export default router;
 /**
  * @swagger
  * /user:
- *   post:
- *     summary: Create a user
- *     description: Only admin can create other users.
- *     tags: [Users]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - username
- *               - password
- *               - role
- *             properties:
- *               username:
- *                 type: string
- *               password:
- *                 type: string
- *                 format: password
- *                 minLength: 8
- *                 description: At least one number and one letter
- *               role:
- *                  type: string
- *                  enum: [USER, ADMIN]
- *             example:
- *               username: user01
- *               password: A12345678
- *               role: USER
- *     responses:
- *       "201":
- *         description: Created
- *         content:
- *           application/json:
- *             schema:
- *                $ref: '#/components/schemas/User'
- *       "400":
- *         $ref: '#/components/responses/DuplicateUsername'
- *       "401":
- *         $ref: '#/components/responses/Unauthorized'
- *       "403":
- *         $ref: '#/components/responses/Forbidden'
- *
  *   get:
  *     summary: Get all users
  *     description: Only admins can retrieve all users.
@@ -86,7 +40,7 @@ export default router;
  *         description: User role
  *         schema:
  *           type: string
- *           enum: ["USER", "ADMIN"]
+ *           enum: ["CUSTOMER", "SUPPLIER", "ADMIN"]
  *       - in: query
  *         name: sortBy
  *         schema:

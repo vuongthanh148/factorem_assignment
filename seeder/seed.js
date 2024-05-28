@@ -1,28 +1,29 @@
-import mongoose from 'mongoose';
-import { Game } from '../src/models/game.model.js';
-import { User } from '../src/models/user.model.js';
+import { createConnection, getRepository } from 'typeorm';
+import User from '../src/entity/user.entity.js';
 import { GlobalConfig } from '../src/shared/config/globalConfig.js';
 import { logger } from '../src/shared/config/logger.js';
-import { seedAdmin, seedGames, seedUser } from './data.js';
+import { seedAdmin, seedUser } from './data.js';
 
-mongoose
-  .connect(GlobalConfig.mongoose.url, GlobalConfig.mongoose.options)
-  .then(() => {
-    logger.info('Connected to MongoDB to seed data');
+createConnection(GlobalConfig.typeorm)
+  .then(async connection => {
+    logger.info('Connected to MySQL to seed data');
+
+    const userRepository = getRepository(User);
+
+    const seedDB = async () => {
+      await connection.query('SET FOREIGN_KEY_CHECKS=0');
+
+      await userRepository.clear();
+      await userRepository.save(seedAdmin);
+      await userRepository.save(seedUser);
+
+      await connection.query('SET FOREIGN_KEY_CHECKS=1');
+    };
+
+    await seedDB();
+    logger.info('Seed data successfully.');
+    await connection.close();
   })
-  .catch((error) => {
+  .catch(error => {
     logger.error(error);
   });
-
-const seedDB = async () => {
-  await Game.deleteMany({});
-  await User.deleteMany();
-  await User.insertMany(seedAdmin);
-  await User.insertMany(seedUser);
-  await Game.insertMany(seedGames);
-};
-
-seedDB().then(() => {
-  logger.info('Seed data successfully.');
-  mongoose.connection.close();
-});

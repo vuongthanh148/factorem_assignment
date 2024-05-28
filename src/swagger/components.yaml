@@ -9,7 +9,7 @@ components:
           type: string
         role:
           type: string
-          enum: [USER, ADMIN]
+          enum: [CUSTOMER, SUPPLIER, ADMIN]
       example:
         id: 65e93c968369c76ba8979c35
         username: admin

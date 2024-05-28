@@ -8,7 +8,6 @@ export const verifyCallback = (req, resolve, reject, requiredPermission) => asyn
     return reject(new CustomError({ code: ErrorCode.UNAUTHORIZED, message: ErrorMessage.UNAUTHORIZED }));
   }
   req.user = user;
-
   if (requiredPermission.length) {
     const userPermissions = ROLE_PERMISSION.get(user.role);
     const hasPermission = requiredPermission.every((requiredRight) => userPermissions.includes(requiredRight));

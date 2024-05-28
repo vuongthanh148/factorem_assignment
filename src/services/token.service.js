@@ -1,6 +1,7 @@
 import jsonwebtoken from 'jsonwebtoken';
 import moment from 'moment';
-import { Token } from '../models/token.model.js';
+import { getRepository } from 'typeorm';
+import Token from '../entity/token.entity.js';
 import { GlobalConfig } from '../shared/config/globalConfig.js';
 import { TOKEN_TYPE } from '../shared/constants/app.constant.js';
 
@@ -47,13 +48,18 @@ const verifyToken = async (token, type) => {
  * @returns {Promise<Token>}
  */
 const saveToken = async (token, userId, expires, type, blacklisted = false) => {
-  const tokenDoc = await Token.create({
+  const tokenRepository = getRepository(Token);
+
+  // Create new token
+  const tokenDoc = tokenRepository.create({
     token,
-    user: userId,
-    expires: expires.toDate(),
+    userId,
+    expires,
     type,
-    blacklisted,
   });
+
+  // Save token to database
+  await tokenRepository.save(tokenDoc);
   return tokenDoc;
 };
 
@@ -68,7 +74,7 @@ const generateAuthTokens = async (user) => {
 
   const refreshTokenExpires = moment().add(GlobalConfig.jwt.refreshExpirationDays, 'days');
   const refreshToken = generateToken(user.id, refreshTokenExpires, TOKEN_TYPE.REFRESH);
-  await saveToken(refreshToken, user.id, refreshTokenExpires, TOKEN_TYPE.REFRESH);
+  await saveToken(refreshToken, user.id, refreshTokenExpires.toDate(), TOKEN_TYPE.REFRESH);
 
   return {
     access: {

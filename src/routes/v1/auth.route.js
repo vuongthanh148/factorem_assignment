@@ -1,11 +1,13 @@
 import express from 'express';
 import authController from '../../controllers/auth.controller.js';
+import { auth } from '../../middlewares/auth.js';
 import { validate } from '../../middlewares/validate.js';
+import { PERMISSION_ENUM } from '../../shared/config/roles.js';
 import { authValidation } from '../../validations/index.js';
 
 const router = express.Router();
 
-router.post('/register', validate(authValidation.register), authController.register);
+router.post('/register', auth([PERMISSION_ENUM.MANAGE_USER]), validate(authValidation.register), authController.register);
 router.post('/login', validate(authValidation.login), authController.login);
 
 export default router;
@@ -21,7 +23,7 @@ export default router;
  * @swagger
  * /auth/register:
  *   post:
- *     summary: Register as user
+ *     summary: Create user account
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -40,9 +42,13 @@ export default router;
  *                 format: password
  *                 minLength: 8
  *                 description: At least one number and one letter
+ *               role:
+ *                 type: string
+ *                 enum: [CUSTOMER, ADMIN, SUPPLIER]
  *             example:
  *               username: user01
  *               password: A12345678
+ *               role: CUSTOMER
  *     responses:
  *       "201":
  *         description: Created

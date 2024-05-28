@@ -1,5 +1,6 @@
 import { ExtractJwt, Strategy as JwtStrategy } from 'passport-jwt';
-import { User } from '../../models/user.model.js';
+import { getRepository } from 'typeorm';
+import User from '../../entity/user.entity.js';
 import { TOKEN_TYPE } from '../constants/app.constant.js';
 import { GlobalConfig } from './globalConfig.js';
 
@@ -8,12 +9,14 @@ const jwtOptions = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
 };
 
+
 const jwtVerify = async (payload, done) => {
   try {
     if (payload.type !== TOKEN_TYPE.ACCESS) {
       throw new Error('Invalid token type');
     }
-    const user = await User.findById(payload.sub);
+    const userRepository = getRepository(User);
+    const user = await userRepository.findOne({ where: { id: payload.sub } });
     if (!user) {
       return done(null, false);
     }
