@@ -1,24 +1,24 @@
-// import express from 'express';
-// import gameController from '../../controllers/game.controller.js';
-// import { auth } from '../../middlewares/auth.js';
-// import { validate } from '../../middlewares/validate.js';
-// import { PERMISSION_ENUM } from '../../shared/config/roles.js';
-// import gameValidation from '../../validations/game.validation.js';
+import express from 'express';
+import { default as projectController } from '../../controllers/project.controller.js';
+import { auth } from '../../middlewares/auth.js';
+import { validate } from '../../middlewares/validate.js';
+import { PERMISSION_ENUM } from '../../shared/config/roles.js';
+import projectValidation from '../../validations/project.validation.js';
 
-// const router = express.Router();
+const router = express.Router();
+
+router
+    .route('/')
+    // .get(auth([PERMISSION_ENUM.MANAGE_PROJECT, PERMISSION_ENUM.VIEW_PROJECT]), validate(projectValidation.createProject), projectController.createProject)
+    .post(auth([PERMISSION_ENUM.MANAGE_PROJECT, PERMISSION_ENUM.CREATE_PROJECT]), validate(projectValidation.createProject), projectController.createProject);
 
 // router
-//   .route('/')
-//   .get(auth([PERMISSION_ENUM.GET_GAME]), validate(gameValidation.queryGames), gameController.queryGames)
-//   .post(auth([PERMISSION_ENUM.CREATE_GAME]), validate(gameValidation.createGame), gameController.createGame);
+//     .route('/:gameId')
+//     .get(auth([PERMISSION_ENUM.GET_GAME]), validate(gameValidation.queryGame), gameController.queryOneGame)
+//     .patch(auth([PERMISSION_ENUM.UPDATE_GAME]), validate(gameValidation.updateGame), gameController.updateGame)
+//     .delete(auth([PERMISSION_ENUM.DELETE_GAME]), validate(gameValidation.deleteGame), gameController.deleteGame);
 
-// router
-//   .route('/:gameId')
-//   .get(auth([PERMISSION_ENUM.GET_GAME]), validate(gameValidation.queryGame), gameController.queryOneGame)
-//   .patch(auth([PERMISSION_ENUM.UPDATE_GAME]), validate(gameValidation.updateGame), gameController.updateGame)
-//   .delete(auth([PERMISSION_ENUM.DELETE_GAME]), validate(gameValidation.deleteGame), gameController.deleteGame);
-
-// export default router;
+export default router;
 
 // /**
 //  * @swagger
