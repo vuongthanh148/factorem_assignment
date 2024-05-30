@@ -2,7 +2,6 @@
 import { getManager, getRepository } from 'typeorm';
 import Item from '../entity/item.entity.js';
 import Project from '../entity/project.entity.js';
-import User from '../entity/user.entity.js';
 import { STATUS_LIST } from '../shared/constants/app.constant.js';
 import { CustomError } from '../utils/custom-error.js';
 
@@ -14,40 +13,78 @@ import { CustomError } from '../utils/custom-error.js';
  */
 async function createProject(projectBody, items, user) {
   const entityManager = getManager();
-  let savedProject, listItem = []
+  let savedProject, savedItems = [];
   try {
     await entityManager.transaction(async transactionalEntityManager => {
-      const project = transactionalEntityManager.create(Project, { ...projectBody, user: user });
+      const project = transactionalEntityManager.create(Project, { ...projectBody, customer: user });
       savedProject = await transactionalEntityManager.save(Project, project);
       for (let itemData of items) {
         const item = transactionalEntityManager.create(Item, { ...itemData, project: savedProject });
-        await transactionalEntityManager.save(Item, item);
-        listItem.push(item);
+        const { project, ...savedItem } = await transactionalEntityManager.save(Item, item);
+        savedItems.push(savedItem);
       }
     });
-    return { ...savedProject, items }
+    return { ...savedProject, items: savedItems };
   } catch (error) {
     throw error;
   }
 }
 
-async function getProjectsByUserId(userId) {
+async function getProjectsByCustomer(userId) {
   const projectRepository = getRepository(Project);
   try {
-    const projects = await projectRepository.find({
-      where: { "user.id": userId },
-      relations: ["items"]
-    });
+    const projects = await projectRepository.createQueryBuilder("project")
+      .select(["project", "customer.id", 'customer.username', "customer.role"])
+      .leftJoin("project.customer", "customer")
+      .leftJoinAndSelect("project.items", "item")
+      .leftJoinAndSelect("item.quotations", "quotation", "quotation.status = :status", { status: STATUS_LIST.APPROVED })
+      .where("project.customer.id = :userId", { userId })
+      .getMany();
     return projects;
   } catch (error) {
     throw error;
   }
 }
 
-async function getAllProjects() {
+async function getAllProjectsByAdmin() {
   const projectRepository = getRepository(Project);
   try {
-    const projects = await projectRepository.find();
+    const projects = await projectRepository.createQueryBuilder("project")
+      .select(["project", "customer.id", 'customer.username', "customer.role"])
+      .leftJoin("project.customer", "customer")
+      .leftJoinAndSelect("project.items", "item")
+      .leftJoinAndSelect("item.quotations", "quotation")
+      .getMany();
+    return projects;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function getProjectById(projectId, userId) {
+  const projectRepository = getRepository(Project);
+  try {
+    const projects = await projectRepository.createQueryBuilder("project")
+      .select(["project", "customer.id", 'customer.username', "customer.role"])
+      .leftJoin("project.customer", "customer")
+      .leftJoinAndSelect("project.items", "item")
+      .leftJoinAndSelect("item.quotations", "quotation", "quotation.status = :status", { status: STATUS_LIST.APPROVED })
+      .where("project.customer.id = :userId", { userId })
+      .andWhere("project.id = :projectId", { projectId })
+      .getMany();
+    return projects;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function getProjectByAdmin(projectId) {
+  const projectRepository = getRepository(Project);
+  try {
+    const projects = await projectRepository.findOne({
+      where: { id: projectId },
+      relations: ["items", "items.quotations"]
+    });
     return projects;
   } catch (error) {
     throw error;
@@ -57,7 +94,6 @@ async function getAllProjects() {
 async function updateProjectStatus(projectId, newStatus) {
   const entityManager = getManager();
   const projectRepository = getRepository(Project);
-  const itemRepository = getRepository(Item);
 
   try {
     const project = await projectRepository.findOne({ where: { id: projectId, status: STATUS_LIST.PENDING }, relations: ["items"] });
@@ -72,62 +108,20 @@ async function updateProjectStatus(projectId, newStatus) {
     });
 
     await entityManager.transaction(async transactionalEntityManager => {
-      // await itemRepository.save(project.items);
       await transactionalEntityManager.save(Item, project.items)
-      const approvedProject = await transactionalEntityManager.save(Project, project);
-
-      return approvedProject;
+      const updatedProject = await transactionalEntityManager.save(Project, project);
+      return updatedProject;
     });
   } catch (error) {
     throw error;
   }
 }
 
-/**
- * @typedef {Object} Option
- * @property {string} sortBy - Sort option in the format: sortField:(desc|asc)
- * @property {number} limit - Maximum number of results per page (default = 10)
- * @property {number} page - Current page (default = 1)
- */
-/**
- * Query for users
- * @param {Object} filter - TypeORM filter
- * @param {Option} options - Query options
- * @returns {Promise<[User[], number]>}
- */
-const queryUsers = async (filter, options) => {
-  const userRepository = getRepository(User);
-
-  const [users, total] = await userRepository.findAndCount({
-    where: filter,
-    order: options.sortBy ? {
-      [options.sortBy.split(':')[0]]: options.sortBy.split(':')[1].toUpperCase(),
-    } : {},
-    skip: (options.page - 1) * options.limit,
-    take: options.limit,
-  });
-
-  return {
-    data: users,
-    total,
-    page: options.page,
-    totalPages: Math.ceil(total / options.limit),
-  };
-};
-
-/**
- * Get user by username
- * @param {string} username
- * @returns {Promise<User>}
- */
-const getUserByUsername = async (username) => {
-  const userRepository = getRepository(User);
-  return userRepository.findOne({ username });
-};
-
 export default {
   createProject,
-  getProjectsByUserId,
-  getAllProjects,
-  updateProjectStatus
+  getProjectsByCustomer,
+  getAllProjectsByAdmin,
+  updateProjectStatus,
+  getProjectById,
+  getProjectByAdmin
 };

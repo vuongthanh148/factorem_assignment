@@ -13,9 +13,10 @@ import { TOKEN_TYPE } from '../shared/constants/app.constant.js';
  * @param {string} [secret]
  * @returns {string}
  */
-const generateToken = (userId, expires, type, secret = GlobalConfig.jwt.secret) => {
+const generateToken = (userId, role, expires, type, secret = GlobalConfig.jwt.secret) => {
   const payload = {
     sub: userId,
+    role: role,
     iat: moment().unix(),
     exp: expires.unix(),
     type,
@@ -70,10 +71,10 @@ const saveToken = async (token, userId, expires, type, blacklisted = false) => {
  */
 const generateAuthTokens = async (user) => {
   const accessTokenExpires = moment().add(GlobalConfig.jwt.accessExpirationMinutes, 'minutes');
-  const accessToken = generateToken(user.id, accessTokenExpires, TOKEN_TYPE.ACCESS);
+  const accessToken = generateToken(user.id, user.role, accessTokenExpires, TOKEN_TYPE.ACCESS);
 
   const refreshTokenExpires = moment().add(GlobalConfig.jwt.refreshExpirationDays, 'days');
-  const refreshToken = generateToken(user.id, refreshTokenExpires, TOKEN_TYPE.REFRESH);
+  const refreshToken = generateToken(user.id, user.role, refreshTokenExpires, TOKEN_TYPE.REFRESH);
   await saveToken(refreshToken, user.id, refreshTokenExpires.toDate(), TOKEN_TYPE.REFRESH);
 
   return {

@@ -27,7 +27,7 @@ export default new EntitySchema({
     }
   },
   relations: {
-    user: {
+    customer: {
       target: "User",
       type: "many-to-one",
       inverseSide: "projects",

@@ -10,8 +10,17 @@ router
     .post(auth([PERMISSION_ENUM.CREATE_QUOTATION]), quotationController.createQuotation)
 // .get(auth([PERMISSION_ENUM.SUPER]), quotationController.getAllProjects);
 
+// SUPPLIER ROUTES
+router
+    .route('/accept/:id')
+    //Supplier accept quotation
+    .post(auth([PERMISSION_ENUM.ACCEPT_QUOTATION]), quotationController.acceptQuotation);
+
+
+// ADMIN ROUTES
 router
     .route('/approve/:id')
+    //Admin approve quotation
     .post(auth([PERMISSION_ENUM.SUPER]), quotationController.approveQuotation);
 
 export default router;

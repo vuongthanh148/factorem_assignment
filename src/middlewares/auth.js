@@ -4,11 +4,12 @@ import { ErrorCode, ErrorMessage } from '../shared/constants/error.constant.js';
 import { CustomError } from '../utils/custom-error.js';
 
 export const verifyCallback = (req, resolve, reject, requiredPermission) => async (err, user, info) => {
-  console.log({ err, user, info });
   if (err || info || !user) {
     return reject(new CustomError({ code: ErrorCode.UNAUTHORIZED, message: ErrorMessage.UNAUTHORIZED }));
   }
+  console.log({ user })
   req.user = user;
+  console.log(req.user)
   if (requiredPermission.length) {
     const userPermissions = ROLE_PERMISSION.get(user.role);
     const hasPermission = requiredPermission.every((requiredRight) => userPermissions.includes(requiredRight));

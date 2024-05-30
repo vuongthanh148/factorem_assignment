@@ -1,4 +1,5 @@
 import express from 'express';
+import adminRoute from './admin.route.js';
 import authRoute from './auth.route.js';
 import projectRoute from './project.route.js';
 import quotationRoute from './quotation.route.js';
@@ -11,6 +12,10 @@ const defaultRoutes = [
   {
     path: '/auth',
     route: authRoute,
+  },
+  {
+    path: '/admin',
+    route: adminRoute,
   },
   {
     path: '/user',
