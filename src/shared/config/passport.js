@@ -17,6 +17,7 @@ const jwtVerify = async (payload, done) => {
     }
     const userRepository = getRepository(User);
     const user = await userRepository.findOne({ where: { id: payload.sub } });
+    delete user.password;
     if (!user) {
       return done(null, false);
     }

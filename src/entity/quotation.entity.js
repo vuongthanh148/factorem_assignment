@@ -1,4 +1,5 @@
 import { EntitySchema } from "typeorm";
+import { STATUS_LIST } from "../shared/constants/app.constant.js";
 
 export default new EntitySchema({
     name: "Quotation",
@@ -10,7 +11,23 @@ export default new EntitySchema({
         },
         price: {
             type: "decimal",
-            default: 0.0
+        },
+        status: {
+            type: "enum",
+            enum: Object.values(STATUS_LIST),
+            default: STATUS_LIST.PENDING
+        },
+        technology: {
+            type: "varchar",
+        },
+        material: {
+            type: "varchar",
+        },
+        surfaceFinish: {
+            type: "varchar",
+        },
+        quantity: {
+            type: "int",
         },
         createdAt: {
             type: "timestamp",
@@ -25,12 +42,11 @@ export default new EntitySchema({
         item: {
             target: "Item",
             type: "many-to-one",
-            inverseSide: "quotations"
+            inverseSide: "quotations",
         },
-        user: {
+        supplier: {
             target: "User",
             type: "many-to-one",
-            inverseSide: "quotations"
-        }
+        },
     }
 });

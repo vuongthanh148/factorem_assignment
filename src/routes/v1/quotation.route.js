@@ -1,5 +1,5 @@
 import express from 'express';
-import { default as projectController } from '../../controllers/project.controller.js';
+import quotationController from '../../controllers/quotation.controller.js';
 import { auth } from '../../middlewares/auth.js';
 import { PERMISSION_ENUM } from '../../shared/config/roles.js';
 
@@ -7,16 +7,12 @@ const router = express.Router();
 
 router
     .route('/')
-    .post(auth([PERMISSION_ENUM.CREATE_PROJECT]), projectController.createProject)
-    .get(auth([PERMISSION_ENUM.SUPER]), projectController.getAllProjects);
+    .post(auth([PERMISSION_ENUM.CREATE_QUOTATION]), quotationController.createQuotation)
+// .get(auth([PERMISSION_ENUM.SUPER]), quotationController.getAllProjects);
 
 router
-    .route('/status/:id')
-    .post(auth([PERMISSION_ENUM.SUPER]), projectController.updateProjectStatus);
-
-router
-    .route('/user/:id')
-    .get(auth([PERMISSION_ENUM.VIEW_PROJECT]), projectController.getProjectsByUserId);
+    .route('/approve/:id')
+    .post(auth([PERMISSION_ENUM.SUPER]), quotationController.approveQuotation);
 
 export default router;
 /**

@@ -4,6 +4,7 @@ import { ErrorCode, ErrorMessage } from '../shared/constants/error.constant.js';
 import { CustomError } from '../utils/custom-error.js';
 
 export const verifyCallback = (req, resolve, reject, requiredPermission) => async (err, user, info) => {
+  console.log({ err, user, info });
   if (err || info || !user) {
     return reject(new CustomError({ code: ErrorCode.UNAUTHORIZED, message: ErrorMessage.UNAUTHORIZED }));
   }

@@ -1,10 +1,37 @@
+import httpStatus from 'http-status';
+import projectService from '../services/project.service.js';
 import { asyncHandler } from '../utils/async-handler.js';
 
 const createProject = asyncHandler(async (req, res) => {
-  // const createdGame = await gameService.createGame(req.body);
-  // res.status(httpStatus.CREATED).send({ games: createdGame });
-  res.status(200)
+  const { projectName, items } = req.body;
+  const createdProject = await projectService.createProject({ name: projectName }, items, req.user);
+  res.status(httpStatus.CREATED).json(createdProject);
 });
+
+const getProjectsByUserId = asyncHandler(async (req, res) => {
+  const userId = req.params.id;
+  const projects = await projectService.getProjectsByUserId(userId);
+  res.status(httpStatus.OK).json(projects);
+});
+
+const getAllProjects = asyncHandler(async (req, res) => {
+  const projects = await projectService.getAllProjects();
+  res.status(httpStatus.OK).json(projects);
+});
+
+const updateProjectStatus = asyncHandler(async (req, res) => {
+  const projectId = req.params.id;
+  const { status } = req.body
+  const updatedProject = await projectService.updateProjectStatus(projectId, status);
+  res.status(httpStatus.OK).json(updatedProject);
+});
+
+
+// const getAllProject = asyncHandler(async (req, res) => {
+//   const { projectName, items } = req.body;
+//   const createdProject = await projectService.getProjectByUserId({ name: projectName }, items, req.user);
+//   res.status(httpStatus.CREATED).json(createdProject);
+// });
 
 // const queryGames = asyncHandler(async (req, res) => {
 //   const name = req.query.name || undefined;
@@ -47,8 +74,10 @@ const createProject = asyncHandler(async (req, res) => {
 // });
 
 export default {
-  createProject
-  // createGame,
+  createProject,
+  getProjectsByUserId,
+  getAllProjects,
+  updateProjectStatus
   // queryGames,
   // queryOneGame,
   // updateGame,

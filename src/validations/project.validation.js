@@ -1,12 +1,16 @@
 import Joi from 'joi';
-import { ROLE_ENUM } from '../shared/config/roles.js';
-import { password } from './custom.validation.js';
 
 const createProject = {
   body: Joi.object().keys({
-    username: Joi.string().required(),
-    password: Joi.string().required().custom(password),
-    role: Joi.string().required().valid(ROLE_ENUM.CUSTOMER, ROLE_ENUM.ADMIN, ROLE_ENUM.SUPPLIER),
+    name: Joi.string().required(),
+    items: Joi.array().items(
+      Joi.object().keys({
+        name: Joi.string().required(),
+        price: Joi.number().required(),
+        quantity: Joi.number().integer().required(),
+      })
+    ),
+
   }),
 };
 

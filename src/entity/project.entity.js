@@ -1,4 +1,5 @@
 import { EntitySchema } from "typeorm";
+import { STATUS_LIST } from "../shared/constants/app.constant.js";
 
 export default new EntitySchema({
   name: "Project",
@@ -10,6 +11,11 @@ export default new EntitySchema({
     },
     name: {
       type: "varchar",
+    },
+    status: {
+      type: "enum",
+      enum: Object.values(STATUS_LIST),
+      default: STATUS_LIST.PENDING
     },
     createdAt: {
       type: "timestamp",
@@ -24,12 +30,12 @@ export default new EntitySchema({
     user: {
       target: "User",
       type: "many-to-one",
-      inverseSide: "projects"
+      inverseSide: "projects",
     },
     items: {
       target: "Item",
       type: "one-to-many",
-      inverseSide: "project"
-    }
+      inverseSide: "project",
+    },
   }
 });

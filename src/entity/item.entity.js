@@ -1,4 +1,5 @@
 import { EntitySchema } from "typeorm";
+import { STATUS_LIST } from "../shared/constants/app.constant.js";
 
 export default new EntitySchema({
   name: "Item",
@@ -26,6 +27,11 @@ export default new EntitySchema({
     quantity: {
       type: "int",
       default: 1
+    },
+    status: {
+      type: "enum",
+      enum: Object.values(STATUS_LIST),
+      default: STATUS_LIST.PENDING
     },
     createdAt: {
       type: "timestamp",
