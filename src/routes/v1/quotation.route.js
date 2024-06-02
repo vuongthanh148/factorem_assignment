@@ -17,11 +17,11 @@ router
 
 router
     .route('/delete/:quotationId')
-    .post(auth([PERMISSION_ENUM.DELETE_QUOTATION]), quotationController.deleteQuotation)
+    .delete(auth([PERMISSION_ENUM.DELETE_QUOTATION]), quotationController.deleteQuotation)
 
 router
     .route('/delete-bulk')
-    .post(auth([PERMISSION_ENUM.DELETE_QUOTATION]), quotationController.deleteListQuotation)
+    .delete(auth([PERMISSION_ENUM.DELETE_QUOTATION]), quotationController.deleteListQuotation)
 
 router
     .route('/accept/:quotationId')
@@ -37,7 +37,7 @@ router
 router
     .route('/status/:quotationId')
     //Admin approve quotation
-    .post(auth([PERMISSION_ENUM.SUPER]), quotationController.updateQuotationStatus);
+    .put(auth([PERMISSION_ENUM.SUPER]), quotationController.updateQuotationStatus);
 
 export default router;
 /**

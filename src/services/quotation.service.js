@@ -129,32 +129,30 @@ async function acceptQuotation(quotationId) {
         id: quotationId,
         status: STATUS_LIST.APPROVED
       },
-      relations: ["item"]
+      relations: ["item", "item.quotations"]
     });
 
     if (!quotation) {
       throw new CustomError({ code: '400004', message: 'No approved quotation found for this id to accept!' });
     }
 
-    quotation.status = STATUS_LIST.ACCEPTED;
-    const acceptedQuotation = await quotationRepository.save(quotation);
-
-    const itemQuotations = await quotationRepository.find({
-      where: {
-        item: {
-          id: quotation.item.id
-        }
-      }
-    });
+    const itemQuotations = [...quotation.item.quotations];
+    delete quotation.item.quotations;
+    const listQuotation = []
 
     for (const itemQuotation of itemQuotations) {
+      if (itemQuotation.status === STATUS_LIST.ACCEPTED)
+        throw new CustomError({ code: '400004', message: 'This item contains other quotation have been accepted.' });
+
       if (itemQuotation.id !== quotation.id) {
         itemQuotation.status = STATUS_LIST.REJECTED;
-        await quotationRepository.save(itemQuotation);
+        listQuotation.push(itemQuotation);
       }
     }
+    quotation.status = STATUS_LIST.ACCEPTED;
+    await quotationRepository.save([...listQuotation, quotation]);
 
-    return acceptedQuotation;
+    return quotation;
   } catch (error) {
     throw error;
   }

@@ -9,7 +9,14 @@ const updateItemStatus = asyncHandler(async (req, res) => {
   res.status(httpStatus.OK).json(updatedItem);
 });
 
+const updateListItemStatus = asyncHandler(async (req, res) => {
+  const { listItem } = req.body
+  const listUpdatedItem = await itemService.updateListItemStatus(listItem);
+  res.status(httpStatus.OK).json(listUpdatedItem);
+});
+
 
 export default {
   updateItemStatus,
+  updateListItemStatus
 };

@@ -9,18 +9,6 @@ router
     .route('/projects')
     .get(auth([PERMISSION_ENUM.SUPER]), projectController.getAllProjectsByAdmin);
 
-// router
-//     .route('/:id')
-//     .get(auth([PERMISSION_ENUM.VIEW_PROJECT]), projectController.getProjectById);
-
-// router
-//     .route('/status/:id')
-//     .post(auth([PERMISSION_ENUM.SUPER]), projectController.updateProjectStatus);
-
-// router
-//     .route('/user/:id')
-//     .get(auth([PERMISSION_ENUM.VIEW_PROJECT]), projectController.getProjectsByUserId);
-
 export default router;
 /**
  * @swagger

@@ -25,7 +25,7 @@ router
 // ADMIN ROUTES
 router
     .route('/status/:projectId')
-    .post(auth([PERMISSION_ENUM.SUPER]), projectController.updateProjectStatus);
+    .put(auth([PERMISSION_ENUM.SUPER]), projectController.updateProjectStatus);
 
 
 export default router;

@@ -10,7 +10,11 @@ const router = express.Router();
 // ADMIN ROUTES
 router
     .route('/status/:id')
-    .post(auth([PERMISSION_ENUM.SUPER]), itemController.updateItemStatus);
+    .put(auth([PERMISSION_ENUM.SUPER]), itemController.updateItemStatus);
+
+router
+    .route('/status-bulk')
+    .put(auth([PERMISSION_ENUM.SUPER]), itemController.updateListItemStatus);
 
 
 export default router;
