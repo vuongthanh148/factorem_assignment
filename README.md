@@ -1,6 +1,6 @@
-# RAZER ASSESSMENT API
+# FACTOREM ASSESSMENT API
 
-A project for Razer technical assessment.
+A project for Factorem technical assessment.
 
 This project provide APIs that manage users and games of a company.
 
@@ -16,8 +16,8 @@ Follow these step to install and run this application locally:
 Clone the repo:
 
 ```bash
-git clone --depth 1 https://github.com/vuongthanh148/razer_assessment.git
-cd razer_assessment
+git clone --depth 1 https://github.com/vuongthanh148/factorem_assessment.git
+cd factorem_assessment
 ```
 
 Install the dependencies:
@@ -433,4 +433,4 @@ To maintain a consistent coding style across different IDEs, the project contain
 ## References
 
 - [hagopj13/node-express-boilerplate](https://github.com/hagopj13/node-express-boilerplate)
-"# factorem_assignment" 
+  "# factorem_assignment"

@@ -14,7 +14,7 @@ export const app = express();
 
 // enable cors
 app.use(cors());
-app.options('*', cors());
+// app.options('*', cors());
 
 // set security HTTP headers
 app.use(helmet());

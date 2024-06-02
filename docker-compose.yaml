@@ -1,9 +1,9 @@
 version: '3'
 
 services:
-  razer-assessment:
+  factorem-assessment:
     build: .
-    image: razer-assessment
+    image: factorem-assessment
     environment:
       - NODE_ENV=PROD
     ports:
@@ -11,9 +11,9 @@ services:
     depends_on:
       - mysql-db
     volumes:
-      - .:/usr/src/razer-assessment
+      - .:/usr/src/factorem-assessment
     networks:
-      - razer-network
+      - factorem-network
 
   mysql-db:
     image: mysql
@@ -25,12 +25,11 @@ services:
     volumes:
       - db_data:/var/lib/mysql
     networks:
-      - razer-network
+      - factorem-network
 
 volumes:
   db_data:
 
 networks:
-  razer-network:
+  factorem-network:
     driver: bridge
-

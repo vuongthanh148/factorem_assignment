@@ -1,6 +1,7 @@
 import express from 'express';
 import adminRoute from './admin.route.js';
 import authRoute from './auth.route.js';
+import itemRoute from './item.route.js';
 import projectRoute from './project.route.js';
 import quotationRoute from './quotation.route.js';
 import swaggerRoute from './swagger.route.js';
@@ -28,6 +29,10 @@ const defaultRoutes = [
   {
     path: '/project',
     route: projectRoute,
+  },
+  {
+    path: '/item',
+    route: itemRoute,
   },
   {
     path: '/api-docs',

@@ -14,6 +14,12 @@ const getProjectsByCustomer = asyncHandler(async (req, res) => {
   res.status(httpStatus.OK).json(projects);
 });
 
+const getProjectsBySupplier = asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const projects = await projectService.getProjectsBySupplier(userId);
+  res.status(httpStatus.OK).json(projects);
+});
+
 const getProjectById = asyncHandler(async (req, res) => {
   const projectId = req.params.id;
   const userId = req.user.id;
@@ -37,6 +43,7 @@ const updateProjectStatus = asyncHandler(async (req, res) => {
 export default {
   createProjectByCustomer,
   getProjectsByCustomer,
+  getProjectsBySupplier,
   getAllProjectsByAdmin,
   updateProjectStatus,
   getProjectById

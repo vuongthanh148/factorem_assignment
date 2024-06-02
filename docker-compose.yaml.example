@@ -1,22 +1,22 @@
 version: '3'
 
 services:
-  razer-assessment:
+  factorem-assessment:
     build: .
-    image: razer-assessment
+    image: factorem-assessment
     environment:
     ports:
       - '3000:3000'
     depends_on:
       - mongodb
     volumes:
-      - .:/usr/src/razer-assessment
+      - .:/usr/src/factorem-assessment
     networks:
-      - razer-network
+      - factorem-network
 
 volumes:
   dbdata:
 
 networks:
-  razer-network:
+  factorem-network:
     driver: bridge

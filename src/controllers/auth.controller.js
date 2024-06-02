@@ -15,4 +15,15 @@ const login = asyncHandler(async (req, res) => {
   res.send({ user, tokens });
 });
 
-export default { register, login };
+const refreshToken = asyncHandler(async (req, res) => {
+  const refreshToken = req.body.refreshToken;
+  const tokens = await tokenService.refreshAuthTokens(refreshToken);
+  res.send({ tokens });
+});
+
+const getUserInfo = asyncHandler(async (req, res) => {
+  const user = req.user;
+  res.send({ user });
+});
+
+export default { register, login, getUserInfo, refreshToken };

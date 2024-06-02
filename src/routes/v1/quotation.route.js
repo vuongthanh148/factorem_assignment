@@ -5,23 +5,38 @@ import { PERMISSION_ENUM } from '../../shared/config/roles.js';
 
 const router = express.Router();
 
+// SUPPLIER ROUTES
+
 router
     .route('/')
     .post(auth([PERMISSION_ENUM.CREATE_QUOTATION]), quotationController.createQuotation)
+
+router
+    .route('/delete/:quotationId')
+    .post(auth([PERMISSION_ENUM.DELETE_QUOTATION]), quotationController.deleteQuotation)
+
+router
+    .route('/delete-bulk')
+    .post(auth([PERMISSION_ENUM.DELETE_QUOTATION]), quotationController.deleteListQuotation)
+
+
 // .get(auth([PERMISSION_ENUM.SUPER]), quotationController.getAllProjects);
 
-// SUPPLIER ROUTES
 router
     .route('/accept/:id')
     //Supplier accept quotation
     .post(auth([PERMISSION_ENUM.ACCEPT_QUOTATION]), quotationController.acceptQuotation);
 
+router
+    .route('/supplier/all')
+    //Supplier accept quotation
+    .get(auth([PERMISSION_ENUM.VIEW_QUOTATION]), quotationController.getAllQuotationBySupplier);
 
 // ADMIN ROUTES
 router
-    .route('/approve/:id')
+    .route('/status/:id')
     //Admin approve quotation
-    .post(auth([PERMISSION_ENUM.SUPER]), quotationController.approveQuotation);
+    .post(auth([PERMISSION_ENUM.SUPER]), quotationController.updateQuotationStatus);
 
 export default router;
 /**

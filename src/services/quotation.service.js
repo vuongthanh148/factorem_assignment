@@ -1,5 +1,5 @@
 /* eslint-disable no-magic-numbers */
-import { getRepository } from 'typeorm';
+import { In, getRepository } from 'typeorm';
 import Item from '../entity/item.entity.js';
 import Quotation from '../entity/quotation.entity.js';
 import { STATUS_LIST } from '../shared/constants/app.constant.js';
@@ -12,7 +12,14 @@ async function createQuotation(itemId, quotationBody, userId) {
   const itemRepository = getRepository(Item);
 
   try {
-    const item = await itemRepository.findOne({ where: { id: itemId, status: STATUS_LIST.APPROVED } });
+    const item = await itemRepository.findOne({
+      where: {
+        id: itemId,
+        status: STATUS_LIST.APPROVED,
+        project: { status: STATUS_LIST.APPROVED }
+      },
+      relations: ["project"]
+    });
     if (!item) {
       throw new CustomError({ code: ErrorCode.ITEM_NOT_FOUND, message: ErrorMessage.ITEM_NOT_FOUND });
     }
@@ -25,16 +32,44 @@ async function createQuotation(itemId, quotationBody, userId) {
   }
 }
 
-async function approveQuotation(quotationId) {
+async function createListQuotation(quotations, userId) {
+  const quotationRepository = getRepository(Quotation);
+  const itemRepository = getRepository(Item);
+
+  try {
+    const items = await itemRepository.find({
+      where: {
+        id: In(quotations.map(q => q.itemId)), status: STATUS_LIST.APPROVED, project: { status: STATUS_LIST.APPROVED }
+      }, relations: ["project"]
+    });
+
+    const createdQuotations = quotations.map(({ quotation, itemId }) => {
+      const item = items.find(i => i.id === itemId);
+      if (!item) throw new CustomError({ code: ErrorCode.ITEM_NOT_FOUND, message: ErrorMessage.ITEM_NOT_FOUND });
+      return { ...quotation, item, supplier: userId };
+    });
+
+    const savedQuotations = await quotationRepository.save(createdQuotations);
+
+    return savedQuotations;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function updateQuotationStatus(quotationId, status) {
   const quotationRepository = getRepository(Quotation);
 
   try {
     const quotation = await quotationRepository.findOne({
       where: {
         id: quotationId,
-        item: { status: STATUS_LIST.APPROVED }
+        item: {
+          status: STATUS_LIST.APPROVED,
+          project: { status: STATUS_LIST.APPROVED }
+        },
       },
-      relations: ["item"]
+      relations: ["item", "item.project"]
     });
 
     if (!quotation) {
@@ -49,6 +84,29 @@ async function approveQuotation(quotationId) {
 
     return approvedQuotation;
   } catch (error) {
+    throw error;
+  }
+}
+
+async function deleteQuotation(quotationId) {
+  const quotationRepository = getRepository(Quotation);
+  try {
+    const deletedQuotation = await quotationRepository.delete({ id: quotationId })
+    return deletedQuotation;
+  }
+  catch (error) {
+    throw error;
+  }
+}
+
+function deleteListQuotation(quotationIds) {
+  const quotationRepository = getRepository(Quotation);
+  console.log({ quotationIds })
+  try {
+    const deletedQuotations = quotationRepository.delete(quotationIds)
+    return deletedQuotations;
+  }
+  catch (error) {
     throw error;
   }
 }
@@ -78,9 +136,30 @@ async function acceptQuotation(quotationId) {
   }
 }
 
+async function getAllQuotationBySupplier(supplierId) {
+  const quotationRepository = getRepository(Quotation);
+
+  try {
+    const quotations = await quotationRepository.find({
+      where: {
+        supplier: supplierId
+      },
+      relations: ["item"]
+    });
+
+    return quotations;
+  } catch (error) {
+    throw error;
+  }
+}
 
 export default {
   createQuotation,
-  approveQuotation,
-  acceptQuotation
+  createListQuotation,
+  updateQuotationStatus,
+  acceptQuotation,
+  deleteQuotation,
+  deleteListQuotation,
+  getAllQuotationBySupplier
 };
+

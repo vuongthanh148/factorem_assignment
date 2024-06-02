@@ -20,6 +20,7 @@ const loginUserWithUsernameAndPassword = async (username, password) => {
   if (!user || !(isPasswordMatch(password, user.password))) {
     throw new CustomError({ code: ErrorCode.LOGIN_FAILED, message: ErrorMessage.LOGIN_FAILED });
   }
+  delete user.password;
   return user;
 };
 

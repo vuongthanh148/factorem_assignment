@@ -2,6 +2,7 @@ import jsonwebtoken from 'jsonwebtoken';
 import moment from 'moment';
 import { getRepository } from 'typeorm';
 import Token from '../entity/token.entity.js';
+import User from '../entity/user.entity.js';
 import { GlobalConfig } from '../shared/config/globalConfig.js';
 import { TOKEN_TYPE } from '../shared/constants/app.constant.js';
 
@@ -31,8 +32,9 @@ const generateToken = (userId, role, expires, type, secret = GlobalConfig.jwt.se
  * @returns {Promise<Token>}
  */
 const verifyToken = async (token, type) => {
-  const payload = jwt.verify(token, GlobalConfig.jwt.secret);
-  const tokenDoc = await Token.findOne({ token, type, user: payload.sub, blacklisted: false });
+  const tokenRepository = getRepository(Token);
+  const payload = jsonwebtoken.verify(token, GlobalConfig.jwt.secret);
+  const tokenDoc = await tokenRepository.findOne({ where: { token: token, type: payload.type, userId: payload.sub } });
   if (!tokenDoc) {
     throw new Error('Token not found');
   }
@@ -89,8 +91,34 @@ const generateAuthTokens = async (user) => {
   };
 };
 
+
+/**
+ * Refresh authentication tokens
+ * @param {string} refreshToken
+ * @returns {Promise<Object>}
+ */
+const refreshAuthTokens = async (refreshToken) => {
+  const userRepository = getRepository(User);
+  const tokenDoc = await verifyToken(refreshToken, TOKEN_TYPE.REFRESH);
+  console.log({ tokenDoc })
+  const user = await userRepository.findOne({ where: { id: tokenDoc.userId } });
+  if (!user) {
+    throw new Error('User not found');
+  }
+  const accessTokenExpires = moment().add(GlobalConfig.jwt.accessExpirationMinutes, 'minutes');
+  const accessToken = generateToken(user.id, user.role, accessTokenExpires, TOKEN_TYPE.ACCESS);
+  return {
+    access: {
+      token: accessToken,
+      expires: accessTokenExpires.toDate(),
+    },
+  };
+};
+
+
 export default {
   generateAuthTokens,
   generateToken,
   verifyToken,
+  refreshAuthTokens,
 };

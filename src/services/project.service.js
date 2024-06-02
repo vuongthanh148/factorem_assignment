@@ -46,6 +46,22 @@ async function getProjectsByCustomer(userId) {
   }
 }
 
+async function getProjectsBySupplier(userId) {
+  const projectRepository = getRepository(Project);
+  try {
+    const projects = await projectRepository.createQueryBuilder("project")
+      .select(["project", "customer.id", 'customer.username', "customer.role"])
+      .leftJoin("project.customer", "customer")
+      .leftJoinAndSelect("project.items", "item", "item.status = :itemStatus", { itemStatus: STATUS_LIST.APPROVED })
+      .leftJoinAndSelect("item.quotations", "quotation", "quotation.supplier = :userId", { userId })
+      .where({ status: STATUS_LIST.APPROVED })
+      .getMany();
+    return projects;
+  } catch (error) {
+    throw error;
+  }
+}
+
 async function getAllProjectsByAdmin() {
   const projectRepository = getRepository(Project);
   try {
@@ -92,7 +108,6 @@ async function getProjectByAdmin(projectId) {
 }
 
 async function updateProjectStatus(projectId, newStatus) {
-  const entityManager = getManager();
   const projectRepository = getRepository(Project);
 
   try {
@@ -100,18 +115,19 @@ async function updateProjectStatus(projectId, newStatus) {
     if (!project) {
       throw new CustomError({ code: '400001', message: "No pending project found" });
     }
+    if (STATUS_LIST[newStatus] === undefined) throw new CustomError({ code: '400001', message: 'Invalid status.' })
+
+    if (newStatus === STATUS_LIST.APPROVED) {
+      const hasApprovedItem = project.items.some(item => item.status === STATUS_LIST.APPROVED);
+      if (!hasApprovedItem) {
+        throw new CustomError({ code: '400001', message: 'At least one item must be approved.' });
+      }
+    }
 
     project.status = newStatus;
-    project.items.forEach(item => {
-      if (item.status === STATUS_LIST.REJECTED) throw new CustomError({ code: '400001', message: 'Invalid item status.' })
-      item.status = newStatus
-    });
+    projectRepository.save(project);
+    return project;
 
-    await entityManager.transaction(async transactionalEntityManager => {
-      await transactionalEntityManager.save(Item, project.items)
-      const updatedProject = await transactionalEntityManager.save(Project, project);
-      return updatedProject;
-    });
   } catch (error) {
     throw error;
   }
@@ -120,6 +136,7 @@ async function updateProjectStatus(projectId, newStatus) {
 export default {
   createProject,
   getProjectsByCustomer,
+  getProjectsBySupplier,
   getAllProjectsByAdmin,
   updateProjectStatus,
   getProjectById,
