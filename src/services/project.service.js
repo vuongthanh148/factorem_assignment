@@ -37,7 +37,7 @@ async function getProjectsByCustomer(userId) {
       .select(["project", "customer.id", 'customer.username', "customer.role"])
       .leftJoin("project.customer", "customer")
       .leftJoinAndSelect("project.items", "item")
-      .leftJoinAndSelect("item.quotations", "quotation", "quotation.status = :status", { status: STATUS_LIST.APPROVED })
+      .leftJoinAndSelect("item.quotations", "quotation", "quotation.status IN (:...statuses)", { statuses: [STATUS_LIST.APPROVED, STATUS_LIST.ACCEPTED] })
       .where("project.customer.id = :userId", { userId })
       .getMany();
     return projects;

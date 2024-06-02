@@ -23,12 +23,9 @@ router
     .route('/delete-bulk')
     .post(auth([PERMISSION_ENUM.DELETE_QUOTATION]), quotationController.deleteListQuotation)
 
-
-// .get(auth([PERMISSION_ENUM.SUPER]), quotationController.getAllProjects);
-
 router
     .route('/accept/:quotationId')
-    //Supplier accept quotation
+    //Customer accept quotation
     .post(auth([PERMISSION_ENUM.ACCEPT_QUOTATION]), quotationController.acceptQuotation);
 
 router
