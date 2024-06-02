@@ -12,6 +12,10 @@ router
     .post(auth([PERMISSION_ENUM.CREATE_QUOTATION]), quotationController.createQuotation)
 
 router
+    .route('/bulk')
+    .post(auth([PERMISSION_ENUM.CREATE_QUOTATION]), quotationController.createListQuotation)
+
+router
     .route('/delete/:quotationId')
     .post(auth([PERMISSION_ENUM.DELETE_QUOTATION]), quotationController.deleteQuotation)
 
