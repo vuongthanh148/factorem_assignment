@@ -1,33 +1,35 @@
 version: '3'
 
 services:
-  razer-assessment:
+  factorem-assessment:
     build: .
-    image: razer-assessment
+    image: factorem-assessment
     environment:
       - NODE_ENV=PROD
-      - MONGODB_URL=mongodb://mongodb:27017/razer-assessment
     ports:
       - '3000:3000'
     depends_on:
-      - mongodb
+      - mysql-db
     volumes:
-      - .:/usr/src/razer-assessment
+      - .:/usr/src/factorem-assessment
     networks:
-      - razer-network
+      - factorem-network
 
-  mongodb:
-    image: mongo:4.2.1-bionic
+  mysql-db:
+    image: mysql
     ports:
-      - '27017:27017'
+      - '3306:3306'
+    environment:
+      - MYSQL_DATABASE=factorem
+      - MYSQL_ROOT_PASSWORD=secretpassword
     volumes:
-      - dbdata:/data/db
+      - db_data:/var/lib/mysql
     networks:
-      - razer-network
+      - factorem-network
 
 volumes:
-  dbdata:
+  db_data:
 
 networks:
-  razer-network:
+  factorem-network:
     driver: bridge

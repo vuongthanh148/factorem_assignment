@@ -1,7 +1,6 @@
 import compression from 'compression';
 import cors from 'cors';
 import express from 'express';
-import mongoSanitize from 'express-mongo-sanitize';
 import helmet from 'helmet';
 import passport from 'passport';
 import { errorConverter, errorResponseHandler } from './middlewares/error.js';
@@ -15,7 +14,7 @@ export const app = express();
 
 // enable cors
 app.use(cors());
-app.options('*', cors());
+// app.options('*', cors());
 
 // set security HTTP headers
 app.use(helmet());
@@ -24,8 +23,6 @@ app.use(express.json());
 // parse urlencoded request body
 app.use(express.urlencoded({ extended: true }));
 
-// sanitize request data
-app.use(mongoSanitize());
 
 // gzip compression
 app.use(compression());

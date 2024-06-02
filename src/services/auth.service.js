@@ -1,6 +1,12 @@
+import bcrypt from 'bcrypt';
+import { getRepository } from 'typeorm';
+import User from '../entity/user.entity.js';
 import { ErrorCode, ErrorMessage } from '../shared/constants/error.constant.js';
 import { CustomError } from '../utils/custom-error.js';
-import { userService } from './index.service.js';
+
+const isPasswordMatch = function (password, hashedPassword) {
+  return bcrypt.compare(password, hashedPassword);
+}
 
 /**
  * Login with username and password
@@ -9,10 +15,12 @@ import { userService } from './index.service.js';
  * @returns {Promise<User>}
  */
 const loginUserWithUsernameAndPassword = async (username, password) => {
-  const user = await userService.getUserByUsername(username);
-  if (!user || !(await user.isPasswordMatch(password))) {
+  const userRepository = getRepository(User);
+  const user = await userRepository.findOne({ where: { username } });
+  if (!user || !(isPasswordMatch(password, user.password))) {
     throw new CustomError({ code: ErrorCode.LOGIN_FAILED, message: ErrorMessage.LOGIN_FAILED });
   }
+  delete user.password;
   return user;
 };
 

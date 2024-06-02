@@ -1,32 +1,22 @@
 version: '3'
 
 services:
-  razer-assessment:
+  factorem-assessment:
     build: .
-    image: razer-assessment
+    image: factorem-assessment
     environment:
-      - MONGODB_URL=mongodb://mongodb:27017/razer-assessment
     ports:
       - '3000:3000'
     depends_on:
       - mongodb
     volumes:
-      - .:/usr/src/razer-assessment
+      - .:/usr/src/factorem-assessment
     networks:
-      - razer-network
-
-  mongodb:
-    image: mongo:4.2.1-bionic
-    ports:
-      - '27017:27017'
-    volumes:
-      - dbdata:/data/db
-    networks:
-      - razer-network
+      - factorem-network
 
 volumes:
   dbdata:
 
 networks:
-  razer-network:
+  factorem-network:
     driver: bridge

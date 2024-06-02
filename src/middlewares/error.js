@@ -1,5 +1,4 @@
 import httpStatus from 'http-status';
-import mongoose from 'mongoose';
 import { GlobalConfig } from '../shared/config/globalConfig.js';
 import { logger } from '../shared/config/logger.js';
 import { APP_ENV } from '../shared/constants/app.constant.js';
@@ -9,7 +8,7 @@ export const errorConverter = (err, req, res, next) => {
   let error = err;
   if (!(error instanceof CustomError)) {
     const code =
-      error.statusCode || error instanceof mongoose.Error ? httpStatus.BAD_REQUEST : httpStatus.INTERNAL_SERVER_ERROR;
+      error.statusCode ? httpStatus.BAD_REQUEST : httpStatus.INTERNAL_SERVER_ERROR;
     const message = error.message || httpStatus[statusCode];
     error = new CustomError({ code, message }, false, err.stack);
   }
