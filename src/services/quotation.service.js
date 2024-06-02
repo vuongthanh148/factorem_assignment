@@ -139,6 +139,21 @@ async function acceptQuotation(quotationId) {
     quotation.status = STATUS_LIST.ACCEPTED;
     const acceptedQuotation = await quotationRepository.save(quotation);
 
+    const itemQuotations = await quotationRepository.find({
+      where: {
+        item: {
+          id: quotation.item.id
+        }
+      }
+    });
+
+    for (const itemQuotation of itemQuotations) {
+      if (itemQuotation.id !== quotation.id) {
+        itemQuotation.status = STATUS_LIST.REJECTED;
+        await quotationRepository.save(itemQuotation);
+      }
+    }
+
     return acceptedQuotation;
   } catch (error) {
     throw error;
