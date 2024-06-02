@@ -1,8 +1,8 @@
 {
-  "name": "factorem-assessment",
+  "name": "factorem-assignment",
   "type": "module",
   "version": "1.0.0",
-  "description": "This application is for factorem assessment",
+  "description": "This application is for factorem assignment",
   "main": "src/app.js",
   "engines": {
     "node": ">=14"
@@ -16,16 +16,8 @@
     "docker:run": "docker-compose -f docker-compose.yaml up -d",
     "seed:run": "node ./seeder/seed"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/vuongthanh148/factorem_assessment.git"
-  },
   "author": "Stephen",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/vuongthanh148/factorem_assessment/issues"
-  },
-  "homepage": "https://github.com/vuongthanh148/factorem_assessment#readme",
   "dependencies": {
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",

@@ -1,17 +1,26 @@
 version: '3'
 
 services:
-  factorem-assessment:
+  app:
     build: .
-    image: factorem-assessment
+    image: factorem-assignment
     environment:
       - NODE_ENV=PROD
+      - BASE_NAME=/api/v1
+      - JWT_SECRET=factorem
+      - JWT_ACCESS_EXPIRATION_MINUTES=1440
+      - JWT_REFRESH_EXPIRATION_DAYS=30
+      - DB_NAME=factorem
+      - DB_HOST=mysql-db
+      - DB_PORT=3306
+      - DB_USERNAME=root
+      - DB_PASSWORD=secretpassword
     ports:
       - '3000:3000'
     depends_on:
       - mysql-db
     volumes:
-      - .:/usr/src/factorem-assessment
+      - .:/usr/src/factorem-assignment
     networks:
       - factorem-network
 

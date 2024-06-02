@@ -34,4 +34,12 @@ export const GlobalConfig = {
     refreshExpirationDays: envVars.JWT_REFRESH_EXPIRATION_DAYS,
   },
   baseName: envVars.BASE_NAME,
+  db: {
+    type: envVars.DB_TYPE,
+    host: envVars.DB_HOST,
+    port: envVars.DB_PORT,
+    username: envVars.DB_USERNAME,
+    password: envVars.DB_PASSWORD,
+    database: envVars.DB_NAME,
+  }
 };
