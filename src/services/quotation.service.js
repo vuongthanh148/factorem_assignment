@@ -59,7 +59,7 @@ async function createListQuotation(quotations, userId) {
 
 async function updateQuotationStatus(quotationId, status) {
   const quotationRepository = getRepository(Quotation);
-
+  if (!quotationId) throw new CustomError({ code: '400004', message: 'Quotation id is required!' })
   try {
     const quotation = await quotationRepository.findOne({
       where: {
@@ -76,10 +76,20 @@ async function updateQuotationStatus(quotationId, status) {
       throw new CustomError({ code: '400004', message: 'Quotation not found!' });
     }
 
-    if (quotation.status == STATUS_LIST.APPROVED) {
+    if (status === STATUS_LIST.ACCEPTED) throw new CustomError({ code: '400004', message: 'Admin cannot accept quotation!', data: quotation });
+
+    if (quotation.status === STATUS_LIST.DELIVERED) throw new CustomError({ code: '400004', message: 'This quotation is delivered!', data: quotation });
+
+
+    if (status === STATUS_LIST.APPROVED && quotation.status == STATUS_LIST.APPROVED) {
       throw new CustomError({ code: '400004', message: 'Quotation already approved!', data: quotation });
     }
-    quotation.status = STATUS_LIST.APPROVED;
+
+    if (status === STATUS_LIST.DELIVERED && quotation.status !== STATUS_LIST.ACCEPTED) {
+      throw new CustomError({ code: '400004', message: 'Quotation must be accepted before delivered!', data: quotation });
+    }
+
+    quotation.status = status;
     const approvedQuotation = await quotationRepository.save(quotation);
 
     return approvedQuotation;
@@ -101,7 +111,6 @@ async function deleteQuotation(quotationId) {
 
 function deleteListQuotation(quotationIds) {
   const quotationRepository = getRepository(Quotation);
-  console.log({ quotationIds })
   try {
     const deletedQuotations = quotationRepository.delete(quotationIds)
     return deletedQuotations;
@@ -113,7 +122,7 @@ function deleteListQuotation(quotationIds) {
 
 async function acceptQuotation(quotationId) {
   const quotationRepository = getRepository(Quotation);
-
+  if (!quotationId) throw new CustomError({ code: '400004', message: 'Quotation id is required!' })
   try {
     const quotation = await quotationRepository.findOne({
       where: {
