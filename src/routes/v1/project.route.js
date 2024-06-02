@@ -24,7 +24,7 @@ router
 
 // ADMIN ROUTES
 router
-    .route('/status/:id')
+    .route('/status/:projectId')
     .post(auth([PERMISSION_ENUM.SUPER]), projectController.updateProjectStatus);
 
 

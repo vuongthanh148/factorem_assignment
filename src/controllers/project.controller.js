@@ -33,7 +33,7 @@ const getAllProjectsByAdmin = asyncHandler(async (req, res) => {
 });
 
 const updateProjectStatus = asyncHandler(async (req, res) => {
-  const projectId = req.params.id;
+  const { projectId } = req.params;
   const { status } = req.body
   const updatedProject = await projectService.updateProjectStatus(projectId, status);
   res.status(httpStatus.OK).json(updatedProject);

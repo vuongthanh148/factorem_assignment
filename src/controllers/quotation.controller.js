@@ -31,13 +31,12 @@ const deleteQuotation = asyncHandler(async (req, res) => {
 
 const deleteListQuotation = asyncHandler(async (req, res) => {
   const { quotationIds } = req.body;
-  console.log({ quotationIds })
   const deletedQuotations = await quotationService.deleteListQuotation(quotationIds);
   res.status(httpStatus.OK).json(deletedQuotations);
 });
 
 const acceptQuotation = asyncHandler(async (req, res) => {
-  const { quotationId } = req.body;
+  const { quotationId } = req.params;
   const acceptedQuotation = await quotationService.acceptQuotation(quotationId);
   res.status(httpStatus.OK).json(acceptedQuotation);
 });

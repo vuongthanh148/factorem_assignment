@@ -23,7 +23,7 @@ router
 // .get(auth([PERMISSION_ENUM.SUPER]), quotationController.getAllProjects);
 
 router
-    .route('/accept/:id')
+    .route('/accept/:quotationId')
     //Supplier accept quotation
     .post(auth([PERMISSION_ENUM.ACCEPT_QUOTATION]), quotationController.acceptQuotation);
 
@@ -34,7 +34,7 @@ router
 
 // ADMIN ROUTES
 router
-    .route('/status/:id')
+    .route('/status/:quotationId')
     //Admin approve quotation
     .post(auth([PERMISSION_ENUM.SUPER]), quotationController.updateQuotationStatus);
 
