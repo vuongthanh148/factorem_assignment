@@ -1,7 +1,6 @@
 # FACTOREM ASSESSMENT API
 
 A project for Factorem technical assessment.
-(Yes I passed this job but the offer was not matched my expectation)
 
 This project provide APIs that manage users and games of a company.
 
