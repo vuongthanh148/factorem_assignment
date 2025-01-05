@@ -1,7 +1,7 @@
 # FACTOREM ASSESSMENT API
 
 A project for Factorem technical assessment.
-(I passed the interview but the culture fit wasn't :D)
+(I passed the tech interview but the culture fit wasn't :D)
 
 This project provide APIs that manage users and games of a company.
 
